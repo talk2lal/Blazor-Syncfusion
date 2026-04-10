@@ -1,0 +1,49 @@
+﻿@page "/presentation"
+@using System.IO;
+@using Convert_PowerPoint_Presentation_to_PDF;
+@inject Convert_PowerPoint_Presentation_to_PDF.Data.PowerPointService service
+@inject Microsoft.JSInterop.IJSRuntime JS
+
+@using Syncfusion.Blazor.SfPdfViewer;
+@using Syncfusion.Blazor.Buttons;
+@using Syncfusion.Pdf.Parsing;
+@using Syncfusion.Pdf;
+
+<h2> PowerPoint To PDF</h2>
+
+@* 
+<SfPdfViewer2
+DocumentPath="wwwroot/PDF_Succinctly.pdf"
+EnablePrint="true"
+EnablePrintRotation="true"
+Width="100%"
+Height="600px" /> *@
+
+<SfPdfViewer2 DocumentPath="@DocumentPath"
+              Height="100vh"
+              Width="100%">
+</SfPdfViewer2>
+
+
+@code {
+    private string DocumentPath { get; set; } = @"C:\Temp\BlazorSyncfusion\PPT\PPTTOPDF\PPTTOPDF\wwwroot\Output.pdf";
+
+    MemoryStream documentStream;
+  
+
+    protected async Task ConvertPPTXtoPDF()
+    {
+        documentStream = service.ConvertPPTXtoPDF();
+
+        PdfLoadedDocument loadedDocument = new PdfLoadedDocument(documentStream);
+        FileStream outputStream = new FileStream("wwwroot/Output.pdf", FileMode.Create, FileAccess.Write);
+        loadedDocument.Save(outputStream);
+        // Close the document
+        loadedDocument.Close(true);
+
+        // var base64 = Convert.ToBase64String(documentStream.ToArray());
+        // await JS.InvokeVoidAsync("downloadFileFromStream", "Sample.pdf", base64);
+    }
+
+}
+<button class="btn btn-primary" @onclick="ConvertPPTXtoPDF">Load PPt</button>

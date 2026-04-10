@@ -1,0 +1,19 @@
+﻿@page "/document-editor"
+@using Syncfusion.Blazor.DocumentEditor
+
+<h3>DocEdit</h3>
+
+<SfDocumentEditorContainer @ref="container"
+                           EnableToolbar="true"
+                           Height="600px"
+                           ServiceUrl="https://ej2services.syncfusion.com/production/web-services/api/documenteditor/"
+                           ToolbarItems="new List<ToolbarItem>() {
+                                ToolbarItem.Separator,
+                                ToolbarItem.Undo,
+                                ToolbarItem.Redo
+                            }">
+</SfDocumentEditorContainer>
+
+@code {
+    private SfDocumentEditorContainer container;
+}

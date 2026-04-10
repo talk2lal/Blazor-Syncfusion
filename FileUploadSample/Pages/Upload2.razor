@@ -1,0 +1,65 @@
+﻿@page "/Upload2"
+@using Syncfusion.Blazor.Inputs
+@using System.IO
+@using Microsoft.AspNetCore.Components.Forms
+@using Syncfusion.Blazor.Popups
+@using System.Collections.ObjectModel
+@inject AuthenticationStateProvider authStateProvider;
+@using Syncfusion.Blazor.SplitButtons
+@using Syncfusion.Blazor.Buttons;
+
+<PageTitle>Uploader</PageTitle>
+
+<SfUploader @ref="uploaderRef"
+            AutoUpload="true"
+            SequentialUpload="true"
+            Multiple="true"
+            DropArea=".drop-area">
+    <UploaderEvents Success="@SuccessHandler" BeforeUpload="@OnBeforeUpload" OnActionComplete="@OnActionCompleteHandler"></UploaderEvents>
+</SfUploader>
+
+<div class="drop-area" id="DropArea" style="width:600px; height:300px;">
+    <p>
+        Drag and drop files here or click to browse.
+    </p>
+</div>
+
+@code {
+    //https://blazor.syncfusion.com/documentation/file-upload/events#success
+
+    private SfUploader uploaderRef;
+    private List<Syncfusion.Blazor.Inputs.FileInfo> uploadedFiles = new();
+    private string SaveToFolderName { get; set; }
+    private bool UploadFolderVisibility { get; set; }
+    ObservableCollection<SaveToFolderButton> SaveToFolderList = new ObservableCollection<SaveToFolderButton>();
+
+    private void OnActionCompleteHandler(ActionCompleteEventArgs args)
+    {
+        // Here, you can customize your code.
+    }
+
+    private void SuccessHandler(SuccessEventArgs args)
+    {
+        uploadedFiles.Add(args.File);
+        Console.WriteLine($"Uploaded: {args.File.Name}");
+    }
+
+    private void OnBeforeUpload(BeforeUploadEventArgs args)
+    {
+        UploadFolderVisibility = true;
+        uploadedFiles.Clear();
+    }
+
+    private void ConfirmDropdown(bool confirmed)
+    {
+        UploadFolderVisibility = false;
+    }
+
+
+
+    public class SaveToFolderButton
+    {
+        public string ButtonContent { get; set; }
+        public string ButtonID { get; set; }
+    }
+}

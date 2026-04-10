@@ -1,0 +1,54 @@
+﻿@page "/SfUploaderwithProgressBar"
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.Buttons
+@using Microsoft.AspNetCore.Components.Web
+
+<h3>SfUploader with Progress Bar in a Dialog</h3>
+
+<SfButton OnClick="OpenDialog">Upload File</SfButton>
+
+<SfDialog @ref="UploadDialog" Width="400px" IsModal="true" ShowCloseIcon="true"
+          Visible="@IsDialogVisible" Header="File Upload">
+    <DialogTemplates>
+        <Content>
+            <SfUploader @ref="Uploader"
+                        AutoUpload="true" MaxFileSize="104857600"
+                        UploadUrl="https://your-upload-endpoint.com/api/upload"
+                        Progressing="OnProgressing"
+                        Success="OnSuccess"
+                        Failure="OnFailure">
+                @* AllowedExtensions=".png,.jpg,.jpeg,.pdf" *@
+            </SfUploader>
+        </Content>
+    </DialogTemplates>
+</SfDialog>
+
+@code {
+    private SfUploader Uploader;
+    private SfDialog UploadDialog;
+    private bool IsDialogVisible = false;
+
+    private void OpenDialog()
+    {
+        IsDialogVisible = true;
+    }
+
+    private void OnProgressing(Microsoft.AspNetCore.Components.Web.ProgressEventArgs args)
+    {
+        Console.WriteLine($"Upload in progress: {args.Loaded} of {args.Total} bytes");
+        // You can calculate percentage: (args.Loaded / args.Total) * 100
+    }
+
+    private void OnSuccess(SuccessEventArgs args)
+    {
+        Console.WriteLine("Upload Successful");
+        IsDialogVisible = false;
+    }
+
+    private void OnFailure(FailureEventArgs args)
+    {
+        Console.WriteLine("Upload Failed");
+        IsDialogVisible = false;
+    }
+}

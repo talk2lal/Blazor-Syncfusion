@@ -1,0 +1,55 @@
+﻿@page "/UploadInPartsOkWorking"
+
+@using Syncfusion.Blazor.Inputs
+@using Microsoft.AspNetCore.Components.Forms
+@inject IWebHostEnvironment Env
+
+<h3>Upload Large File (No Controller)</h3>
+
+<SfUploader AutoUpload="true" MaxFileSize="104857600">
+    @*  ChunkSize="1048576" *@
+    <UploaderEvents ValueChange="@OnChange"></UploaderEvents>
+</SfUploader>
+
+@code {
+    private async Task OnChange(UploadChangeEventArgs args)
+    {
+        try
+        {
+            var uploadFolder = Path.Combine(Env.WebRootPath, "Upload");
+            if (!Directory.Exists(uploadFolder))
+                Directory.CreateDirectory(uploadFolder);
+
+            foreach (var file in args.Files)
+            {
+                var filePath = Path.Combine(uploadFolder, file.FileInfo.Name);
+
+                // Save in chunks to reduce memory pressure
+                using var outputStream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
+
+                var inputStream = file.File.OpenReadStream(long.MaxValue);
+                //var buffer = new byte[81920]; // 80 KB buffer
+                var buffer = new byte[524288]; // 1 MB buffer
+                int bytesRead;
+
+                while ((bytesRead = await inputStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                {
+                    await outputStream.WriteAsync(buffer.AsMemory(0, bytesRead));
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Upload failed: {ex.Message}");
+        }
+    }
+}
+
+
+
+
+
+
+
+
+

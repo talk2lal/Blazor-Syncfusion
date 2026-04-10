@@ -1,0 +1,92 @@
+﻿@page "/upload1"
+@using Syncfusion.Blazor.Inputs
+@using System.IO
+@using Microsoft.AspNetCore.Components.Forms
+@using Syncfusion.Blazor.Popups
+@using System.Collections.ObjectModel
+@inject AuthenticationStateProvider authStateProvider;
+@* @inject SfDialogService DialogService; *@
+@using Syncfusion.Blazor.SplitButtons
+@using Syncfusion.Blazor.Buttons;
+@* @using Syncfusion.Blazor.DropDowns *@
+
+
+<PageTitle>Uploader</PageTitle>
+
+@* AllowedExtensions=".jpg,.png,.pdf,.txt,.docx" *@
+<SfUploader @ref="uploaderRef"
+AutoUpload="true"
+SequentialUpload="true"
+Multiple="true"
+DropArea=".drop-area">
+    <UploaderEvents Success="@SuccessHandler" BeforeUpload="@OnBeforeUpload" OnActionComplete="@OnActionCompleteHandler"></UploaderEvents>
+</SfUploader>
+
+<div class="drop-area" id="DropArea" style="width:600px; height:300px;">
+    <p>
+        Drag and drop files here or click to browse.   
+    </p>
+</div>
+
+@* <SfDialog CssClass="SGPopup" @ref="DropdownFolderSelectDialog" Width="600px" ShowCloseIcon="true" @bind-Visible="UploadFolderVisibility" AllowPrerender="true" IsModal="true">
+    <DialogTemplates>
+        <Header>Select a folder to upload to</Header>
+        <Content>
+            <div class="row col-md-12 p-0 pt-2 pb-2 ">
+                <div class="col-md-12">
+                    <SfDropDownList Placeholder="" TItem="SaveToFolderButton" TValue="string" @bind-Value="@SaveToFolderName" DataSource="@SaveToFolderList">
+                        <DropDownListFieldSettings Text="ButtonContent" Value="ButtonContent"></DropDownListFieldSettings>
+                    </SfDropDownList>
+                </div>
+                <div class="col-md-12 d-flex justify-content-end">
+                    <button class="e-control e-btn e-lib btn-primary col-md-2" CssClass="btn-primary" style="margin-top:10px; margin-right: 10px;" @onclick="() => ConfirmDropdown(false)">Cancel</button>
+                    <button class="e-control e-btn e-lib btn-primary col-md-2" CssClass="btn-primary" style="margin-top:10px;" @onclick="() => ConfirmDropdown(true)">OK</button>
+                </div>
+            </div>
+        </Content>
+    </DialogTemplates>
+</SfDialog>
+ *@
+
+@code {
+
+
+    //https://blazor.syncfusion.com/documentation/file-upload/events#success
+
+    private SfUploader uploaderRef;
+    private List<Syncfusion.Blazor.Inputs.FileInfo> uploadedFiles = new();
+    private string SaveToFolderName { get; set; }
+    private bool UploadFolderVisibility { get; set; }
+    // private SfDialog DropdownFolderSelectDialog;
+    ObservableCollection<SaveToFolderButton>  SaveToFolderList = new ObservableCollection<SaveToFolderButton>();
+
+    private void OnActionCompleteHandler(ActionCompleteEventArgs args)
+    {
+        // Here, you can customize your code.
+    }
+
+    private void SuccessHandler(SuccessEventArgs args)
+    {
+        uploadedFiles.Add(args.File);
+        Console.WriteLine($"Uploaded: {args.File.Name}");
+    }
+
+    private void OnBeforeUpload(BeforeUploadEventArgs args)
+    {
+        UploadFolderVisibility = true;
+        uploadedFiles.Clear();
+    }
+
+    private void ConfirmDropdown(bool confirmed)
+    {
+        UploadFolderVisibility = false;
+    }
+
+
+
+    public class SaveToFolderButton
+    {
+        public string ButtonContent { get; set; }
+        public string ButtonID { get; set; }
+    }
+}
