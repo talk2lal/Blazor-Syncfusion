@@ -1,0 +1,302 @@
+﻿@page "/FormatPainter"
+@using Syncfusion.Blazor.DocumentEditor
+
+<h3>Syncfusion DocumentEditor with Format Painter</h3>
+
+<div class="control-section">
+    <div class="toolbar-section">
+        <button class="btn btn-primary" @onclick="CopyFormat">
+            <i class="fa fa-paint-brush"></i> Format Painter
+        </button>
+        <button class="btn btn-secondary" @onclick="PasteFormat" disabled="@(!isFormatCopied)">
+            <i class="fa fa-paste"></i> Apply Format
+        </button>
+        <button class="btn btn-info" @onclick="ClearFormat">
+            <i class="fa fa-eraser"></i> Clear Format
+        </button>
+    </div>
+
+    <div class="editor-section">
+        <SfDocumentEditorContainer @ref="DocumentEditorContainer"
+                                   Height="600px"
+                                   EnableToolbar="true"
+                                   EnableLocalPaste="true">
+            <DocumentEditorContainerEvents SelectionChanged="OnSelectionChanged"
+                                           ContentChanged="OnContentChanged" />
+        </SfDocumentEditorContainer>
+    </div>
+</div>
+
+<div class="info-section mt-3">
+    <div class="alert alert-info">
+        <h5>Format Painter Instructions:</h5>
+        <ul>
+            <li>Select text with the formatting you want to copy</li>
+            <li>Click "Format Painter" to copy the format</li>
+            <li>Select the target text where you want to apply the format</li>
+            <li>Click "Apply Format" to paste the formatting</li>
+        </ul>
+    </div>
+</div>
+
+@code {
+    SfDocumentEditorContainer DocumentEditorContainer;
+    private bool isFormatCopied = false;
+    private object copiedFormat;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadSampleDocument();
+        }
+    }
+
+    private async Task LoadSampleDocument()
+    {
+        string sampleContent = @"
+        {
+            ""sections"": [
+                {
+                    ""blocks"": [
+                        {
+                            ""paragraphFormat"": {
+                                ""styleName"": ""Normal""
+                            },
+                            ""inlines"": [
+                                {
+                                    ""text"": ""Format Painter Demo Document"",
+                                    ""characterFormat"": {
+                                        ""bold"": true,
+                                        ""fontSize"": 16,
+                                        ""fontColor"": ""#0066CC""
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            ""paragraphFormat"": {
+                                ""styleName"": ""Normal""
+                            },
+                            ""inlines"": [
+                                {
+                                    ""text"": ""This is a sample paragraph with normal formatting. You can select this text and use the Format Painter to copy its formatting to other parts of the document.""
+                                }
+                            ]
+                        },
+                        {
+                            ""paragraphFormat"": {
+                                ""styleName"": ""Normal""
+                            },
+                            ""inlines"": [
+                                {
+                                    ""text"": ""This text has different formatting - "",
+                                    ""characterFormat"": {
+                                        ""italic"": true,
+                                        ""fontColor"": ""#FF6600""
+                                    }
+                                },
+                                {
+                                    ""text"": ""bold and underlined"",
+                                    ""characterFormat"": {
+                                        ""bold"": true,
+                                        ""underline"": ""Single"",
+                                        ""fontColor"": ""#CC0000""
+                                    }
+                                },
+                                {
+                                    ""text"": "" - that you can copy and apply elsewhere.""
+                                }
+                            ]
+                        },
+                        {
+                            ""paragraphFormat"": {
+                                ""styleName"": ""Normal""
+                            },
+                            ""inlines"": [
+                                {
+                                    ""text"": ""Select any formatted text above, click Format Painter, then select this plain text and apply the format!""
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }";
+
+        await DocumentEditorContainer.DocumentEditor.OpenAsync(sampleContent);
+    }
+
+    private async Task CopyFormat()
+    {
+        try
+        {
+            // Get the current selection
+            var selection = await DocumentEditorContainer.DocumentEditor.Selection.GetSelectionAsync();
+
+            if (selection != null)
+            {
+                // Get character format of selected text
+                copiedFormat = await DocumentEditorContainer.DocumentEditor.Selection.GetCharacterFormatAsync();
+                isFormatCopied = true;
+
+                // Show success message
+                await InvokeAsync(StateHasChanged);
+
+                // Optional: You can also show a toast notification here
+                Console.WriteLine("Format copied successfully!");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error copying format: {ex.Message}");
+        }
+    }
+
+    private async Task PasteFormat()
+    {
+        try
+        {
+            if (isFormatCopied && copiedFormat != null)
+            {
+                // Apply the copied format to current selection
+                await DocumentEditorContainer.DocumentEditor.Selection.ApplyCharacterFormatAsync(copiedFormat);
+
+                // Reset the format painter state
+                isFormatCopied = false;
+                copiedFormat = null;
+
+                await InvokeAsync(StateHasChanged);
+
+                Console.WriteLine("Format applied successfully!");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error applying format: {ex.Message}");
+        }
+    }
+
+    private async Task ClearFormat()
+    {
+        try
+        {
+            // Clear formatting from selected text
+            await DocumentEditorContainer.DocumentEditor.Selection.ClearCharacterFormatAsync();
+
+            Console.WriteLine("Format cleared successfully!");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error clearing format: {ex.Message}");
+        }
+    }
+
+    private async Task OnSelectionChanged()
+    {
+        // This event fires when text selection changes
+        // You can add logic here to update UI based on current selection
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task OnContentChanged()
+    {
+        // This event fires when document content changes
+        // You can add logic here to track document changes
+    }
+}
+
+<style>
+    .control-section {
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    .toolbar-section {
+        margin-bottom: 10px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+    }
+
+    .toolbar-section button {
+        margin-right: 10px;
+        padding: 8px 15px;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .toolbar-section button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .editor-section {
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        overflow: hidden;
+    }
+
+    .info-section {
+        margin-top: 15px;
+    }
+
+    .alert {
+        padding: 15px;
+        margin-bottom: 20px;
+        border: 1px solid transparent;
+        border-radius: 4px;
+    }
+
+    .alert-info {
+        color: #31708f;
+        background-color: #d9edf7;
+        border-color: #bce8f1;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 6px 12px;
+        margin-bottom: 0;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 1.42857143;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: middle;
+        cursor: pointer;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        text-decoration: none;
+    }
+
+    .btn-primary {
+        color: #fff;
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+    .btn-secondary {
+        color: #fff;
+        background-color: #6c757d;
+        border-color: #6c757d;
+    }
+
+    .btn-info {
+        color: #fff;
+        background-color: #17a2b8;
+        border-color: #17a2b8;
+    }
+
+    .btn:hover {
+        opacity: 0.8;
+    }
+
+    .mt-3 {
+        margin-top: 1rem;
+    }
+</style>
+

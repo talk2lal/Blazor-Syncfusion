@@ -1,0 +1,29 @@
+﻿@page "/PDFComponent00"
+
+@using Syncfusion.Blazor.SfPdfViewer
+
+@* <SfPdfViewer2 DocumentPath="@DocumentPath" Height="100vh" Width="100%" EnableToolbar="true"></SfPdfViewer2> *@
+
+
+<SfPdfViewer2 DocumentPath="@DocumentPath" EnablePrintRotation="true"
+              Height="100vh"
+              Width="100%"
+              EnableToolbar="true">
+    <PdfViewerToolbarSettings ToolbarItems="@(new List<ToolbarItem>
+    {
+        ToolbarItem.OpenOption,
+        ToolbarItem.DownloadOption,
+        ToolbarItem.PrintOption,
+        ToolbarItem.SearchOption,
+        ToolbarItem.PageNavigationTool,
+        ToolbarItem.MagnificationTool,
+        ToolbarItem.PanTool,
+        ToolbarItem.SelectionTool,
+        ToolbarItem.AnnotationEditTool
+    })" />
+</SfPdfViewer2>
+
+
+@code {
+    private string DocumentPath { get; set; } = @"C:\Temp\BlazorSyncfusion\PDFViewerSample\wwwroot\PDF_Succinctly.pdf";
+}

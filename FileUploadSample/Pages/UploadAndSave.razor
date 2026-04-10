@@ -1,0 +1,27 @@
+﻿@page "/UploadAndSave"
+@using Syncfusion.Blazor.Inputs
+
+<h3>UploadAndSave</h3>
+
+<SfUploader AutoUpload="true" MaxFileSize="104857600">
+    <UploaderEvents ValueChange="@OnChange"></UploaderEvents>
+</SfUploader>
+@code {
+    private async Task OnChange(UploadChangeEventArgs args)
+    {
+        try
+        {
+            foreach (var file in args.Files)
+            {
+                var path = @"wwwroot/Upload/" + file.FileInfo.Name;
+                FileStream filestream = new FileStream(path, FileMode.Create, FileAccess.Write);
+                await file.File.OpenReadStream(long.MaxValue).CopyToAsync(filestream);
+                filestream.Close();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+}

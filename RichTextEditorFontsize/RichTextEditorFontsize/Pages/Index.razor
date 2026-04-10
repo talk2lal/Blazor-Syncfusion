@@ -1,0 +1,51 @@
+﻿@page "/"
+
+@using Syncfusion.Blazor.RichTextEditor
+
+<SfRichTextEditor Width="700px" Height="300px">
+    <RichTextEditorToolbarSettings Items="@ToolbarItems" />    
+    <RichTextEditorFontFamily Default="Arial" Items="@FontFamilyItems" />
+    <RichTextEditorFontSize Default="11pt" Items="@FontSizeItems" />
+</SfRichTextEditor>
+
+@code {
+  
+    private List<ToolbarItemModel> ToolbarItems = new()
+    {
+        new ToolbarItemModel { Command = ToolbarCommand.Bold },
+        new ToolbarItemModel { Command = ToolbarCommand.Italic },
+        new ToolbarItemModel { Command = ToolbarCommand.Underline },
+        new ToolbarItemModel { Command = ToolbarCommand.FontName },  // font dropdown
+        new ToolbarItemModel { Command = ToolbarCommand.FontSize },  // size dropdown
+        new ToolbarItemModel { Command = ToolbarCommand.Alignments },
+        new ToolbarItemModel { Command = ToolbarCommand.OrderedList },
+        new ToolbarItemModel { Command = ToolbarCommand.UnorderedList },
+        new ToolbarItemModel { Command = ToolbarCommand.Formats }
+    };
+
+    
+    private List<DropDownItemModel> FontFamilyItems = new()
+    {
+        new DropDownItemModel { Text = "Arial", Value = "Arial" },
+        new DropDownItemModel { Text = "Georgia", Value = "Georgia" },
+        new DropDownItemModel { Text = "Tahoma", Value = "Tahoma" },
+        new DropDownItemModel { Text = "Times New Roman", Value = "Times New Roman" },
+        new DropDownItemModel { Text = "Verdana", Value = "Verdana" }
+    };
+
+    
+    private List<DropDownItemModel> FontSizeItems = new()
+    {
+        new DropDownItemModel { Text = "8pt", Value = "8pt" },
+        new DropDownItemModel { Text = "10pt", Value = "10pt" },
+        new DropDownItemModel { Text = "11pt", Value = "11pt" },
+        new DropDownItemModel { Text = "12pt", Value = "12pt" },
+        new DropDownItemModel { Text = "14pt", Value = "14pt" },
+        new DropDownItemModel { Text = "18pt", Value = "18pt" },
+        new DropDownItemModel { Text = "24pt", Value = "24pt" },
+        new DropDownItemModel { Text = "36pt", Value = "36pt" }
+    };
+}
+
+
+
